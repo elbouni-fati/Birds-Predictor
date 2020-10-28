@@ -13,37 +13,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
-import android.widget.Button;
+import android.widget.GridView;
+
+import java.util.ArrayList;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.ibm.cloud.sdk.core.http.Response;
-import com.ibm.cloud.sdk.core.security.Authenticator;
-import com.ibm.cloud.sdk.core.security.IamAuthenticator;
-import com.ibm.watson.developer_cloud.service.security.IamOptions;
-
-import com.ibm.watson.visual_recognition.v3.VisualRecognition;
-import com.ibm.watson.visual_recognition.v3.model.ClassifiedImages;
-import com.ibm.watson.visual_recognition.v3.model.ClassifyOptions;
-import com.ibm.watson.visual_recognition.v4.model.AddImageTrainingDataOptions;
-import com.ibm.watson.visual_recognition.v4.model.AddImagesOptions;
-import com.ibm.watson.visual_recognition.v4.model.AnalyzeOptions;
-import com.ibm.watson.visual_recognition.v4.model.AnalyzeResponse;
-import com.ibm.watson.visual_recognition.v4.model.Collection;
-import com.ibm.watson.visual_recognition.v4.model.CreateCollectionOptions;
-import com.ibm.watson.visual_recognition.v4.model.ImageDetailsList;
-import com.ibm.watson.visual_recognition.v4.model.Location;
-import com.ibm.watson.visual_recognition.v4.model.TrainOptions;
-import com.ibm.watson.visual_recognition.v4.model.TrainingDataObject;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-
-public class MainActivity extends AppCompatActivity {
-
+public class accueil extends AppCompatActivity {
     private ImageButton btn_import;
     private ImageButton btn_capture;
 
@@ -57,36 +36,21 @@ public class MainActivity extends AppCompatActivity {
     final int REQUEST_IMAGE_ID = 20;
     final int REQUEST_IMPORT_IMAGE_ID = 40;
 
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        btn_import = findViewById(R.id.imageButton);
-        btn_capture = findViewById(R.id.imageButton2);
-
-        imageview = findViewById(R.id.imageView);
-
-
-    }
-
     public void ImportImage(View view) {
-        if (hasPermissions(MainActivity.this, IMPORT_IMAGE_PERMISSIONS)){
+        if (hasPermissions(accueil.this, IMPORT_IMAGE_PERMISSIONS)){
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, REQUEST_IMPORT_IMAGE_ID);
         }else{
-            ActivityCompat.requestPermissions(MainActivity.this, CAPTURE_PERMISSIONS, REQUEST_IMPORT_IMAGE_ID);
+            ActivityCompat.requestPermissions(accueil.this, CAPTURE_PERMISSIONS, REQUEST_IMPORT_IMAGE_ID);
         }
     }
 
     public void CaptureImage(View view) {
-        if (hasPermissions(MainActivity.this, CAPTURE_PERMISSIONS)){
+        if (hasPermissions(accueil.this, CAPTURE_PERMISSIONS)){
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             startActivityForResult(intent, REQUEST_IMAGE_ID);
         }else{
-            ActivityCompat.requestPermissions(MainActivity.this, CAPTURE_PERMISSIONS, REQUEST_IMAGE_ID);
+            ActivityCompat.requestPermissions(accueil.this, CAPTURE_PERMISSIONS, REQUEST_IMAGE_ID);
         }
 
     }
@@ -95,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_ID) {
             if (resultCode == RESULT_OK) {
-                Intent intent = new Intent(MainActivity.this, RaceDetaille.class);
+                Intent intent = new Intent(accueil.this, RaceDetaille.class);
                 Bitmap bp = (Bitmap) data.getExtras().get("data");
                 intent.putExtra("bp",bp);
                 startActivity(intent);
@@ -112,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 Cursor cursor = getContentResolver().query(selectedImage, filePath, null, null, null);
                 cursor.moveToFirst();
 
-                Intent intent = new Intent(MainActivity.this, RaceDetaille.class);
+                Intent intent = new Intent(accueil.this, RaceDetaille.class);
                 intent.putExtra("path",selectedImage.toString());
                 startActivity(intent);
 
@@ -131,5 +95,27 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+    GridView simpleList;
+    ArrayList birdList=new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_accueil);
+
+        btn_import = findViewById(R.id.imageButton);
+        btn_capture = findViewById(R.id.imageButton2);
+
+        imageview = findViewById(R.id.imageView);
+        simpleList = (GridView) findViewById(R.id.simpleGridView);
+        birdList.add(new item("AFRICAN FIREFINCH",R.drawable.afri));
+        birdList.add(new item("ALBATROSS",R.drawable.albatos));
+        birdList.add(new item("BALD EAGLE",R.drawable.saqr));
+        birdList.add(new item("TAIWAN MAGPIE",R.drawable.blu));
+        birdList.add(new item("YELLOW HEADED BLACKBIRD",R.drawable.yelow));
+        birdList.add(new item("RED HONEY CREEPER",R.drawable.hony));
+
+        MyAdapter myAdapter=new MyAdapter(this,R.layout.grid,birdList);
+        simpleList.setAdapter(myAdapter);
+    }
 }
-;
